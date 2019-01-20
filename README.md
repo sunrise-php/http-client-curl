@@ -16,7 +16,7 @@ composer require sunrise/http-client-curl
 
 ## How to use?
 
-### With Sunrise Factory
+### Sunrise HTTP Factory
 
 ```bash
 composer require sunrise/http-factory
@@ -35,23 +35,33 @@ $response = $client->sendRequest($request);
 // just use PSR-7 Response object...
 ```
 
-### With Zend Diactoros
+### Zend Diactoros
 
 ```bash
 composer require zendframework/zend-diactoros
 ```
 
 ```php
+use Sunrise\Http\Client\Curl\Client;
 use Zend\Diactoros\RequestFactory;
 use Zend\Diactoros\ResponseFactory;
 use Zend\Diactoros\StreamFactory;
-use Sunrise\Http\Client\Curl\Client;
 
 $client = new Client(new ResponseFactory(), new StreamFactory());
 $request = (new RequestFactory)->createRequest('GET', 'http://php.net/');
 $response = $client->sendRequest($request);
 
 // just use PSR-7 Response object...
+```
+
+### cURL options
+
+```php
+$client = new Client(new ResponseFactory(), new StreamFactory(), [
+    \CURLOPT_AUTOREFERER => true,
+    \CURLOPT_FOLLOWLOCATION => true,
+    \CURLOPT_MAXREDIRS => 10,
+]);
 ```
 
 ## Test run
@@ -66,8 +76,9 @@ https://phpdoc.fenric.ru/
 
 ## Useful links
 
+* http://php.net/manual/en/intro.curl.php
+* https://curl.haxx.se/libcurl/c/libcurl-errors.html
 * https://www.php-fig.org/psr/psr-2/
 * https://www.php-fig.org/psr/psr-7/
 * https://www.php-fig.org/psr/psr-17/
 * https://www.php-fig.org/psr/psr-18/
-* http://php.net/manual/en/intro.curl.php
