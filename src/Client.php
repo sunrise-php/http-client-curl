@@ -52,12 +52,12 @@ use const CURLOPT_URL;
 /**
  * HTTP Client based on CURL
  *
+ * @link http://php.net/manual/en/intro.curl.php
+ * @link https://curl.haxx.se/libcurl/c/libcurl-errors.html
  * @link https://www.php-fig.org/psr/psr-2/
  * @link https://www.php-fig.org/psr/psr-7/
  * @link https://www.php-fig.org/psr/psr-17/
  * @link https://www.php-fig.org/psr/psr-18/
- * @link http://php.net/manual/en/intro.curl.php
- * @link https://curl.haxx.se/libcurl/c/libcurl-errors.html
  */
 class Client implements ClientInterface
 {
@@ -113,7 +113,7 @@ class Client implements ClientInterface
             throw new ClientException('Unable to initialize a cURL session');
         }
 
-        $options = $this->padCurlOptions($request);
+        $options = $this->extendCurlOptions($request);
         if (false === curl_setopt_array($handle, $options)) {
             throw new ClientException('Unable to configure a cURL session');
         }
@@ -155,7 +155,7 @@ class Client implements ClientInterface
      *
      * @return array
      */
-    protected function padCurlOptions(RequestInterface $request) : array
+    protected function extendCurlOptions(RequestInterface $request) : array
     {
         $options = $this->curlOptions;
 
