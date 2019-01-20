@@ -16,7 +16,42 @@ composer require sunrise/http-client-curl
 
 ## How to use?
 
+### With Sunrise Factory
+
+```bash
+composer require sunrise/http-factory
+```
+
 ```php
+use Sunrise\Http\Client\Curl\Client;
+use Sunrise\Http\Factory\RequestFactory;
+use Sunrise\Http\Factory\ResponseFactory;
+use Sunrise\Http\Factory\StreamFactory;
+
+$client = new Client(new ResponseFactory(), new StreamFactory());
+$request = (new RequestFactory)->createRequest('GET', 'http://php.net/');
+$response = $client->sendRequest($request);
+
+// just use PSR-7 Response object...
+```
+
+### With Zend Diactoros
+
+```bash
+composer require zendframework/zend-diactoros
+```
+
+```php
+use Zend\Diactoros\RequestFactory;
+use Zend\Diactoros\ResponseFactory;
+use Zend\Diactoros\StreamFactory;
+use Sunrise\Http\Client\Curl\Client;
+
+$client = new Client(new ResponseFactory(), new StreamFactory());
+$request = (new RequestFactory)->createRequest('GET', 'http://php.net/');
+$response = $client->sendRequest($request);
+
+// just use PSR-7 Response object...
 ```
 
 ## Test run
@@ -31,9 +66,8 @@ https://phpdoc.fenric.ru/
 
 ## Useful links
 
-* http://php.net/manual/en/intro.curl.php
-* https://curl.haxx.se/libcurl/c/libcurl-errors.html
 * https://www.php-fig.org/psr/psr-2/
 * https://www.php-fig.org/psr/psr-7/
 * https://www.php-fig.org/psr/psr-17/
 * https://www.php-fig.org/psr/psr-18/
+* http://php.net/manual/en/intro.curl.php
