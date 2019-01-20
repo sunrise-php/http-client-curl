@@ -44,7 +44,7 @@ class ClientTest extends TestCase
         $request = (new RequestFactory)->createRequest('GET', '');
 
         $this->expectException(NetworkExceptionInterface::class);
-        $response = $client->sendRequest($request);
+        $client->sendRequest($request);
     }
 
     public function testClientException()
