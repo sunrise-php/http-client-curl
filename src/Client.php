@@ -113,7 +113,7 @@ class Client implements ClientInterface
             throw new ClientException('Unable to initialize a cURL session');
         }
 
-        $options = $this->extendCurlOptions($request);
+        $options = $this->padCurlOptions($request);
         if (false === curl_setopt_array($handle, $options)) {
             throw new ClientException('Unable to configure a cURL session');
         }
@@ -155,7 +155,7 @@ class Client implements ClientInterface
      *
      * @return array
      */
-    protected function extendCurlOptions(RequestInterface $request) : array
+    protected function padCurlOptions(RequestInterface $request) : array
     {
         $options = $this->curlOptions;
 
