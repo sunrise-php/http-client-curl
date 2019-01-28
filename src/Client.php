@@ -27,6 +27,7 @@ use Sunrise\Http\Client\Curl\Exception\NetworkException;
  */
 use function curl_close;
 use function curl_errno;
+use function curl_error;
 use function curl_exec;
 use function curl_getinfo;
 use function curl_init;
