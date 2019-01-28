@@ -1,34 +1,34 @@
 {
-	"name": "sunrise/http-client-curl",
-	"description": "Sunrise HTTP Client based on a cURL",
-	"keywords": ["fenric", "sunrise", "http-client", "curl", "psr-2", "psr-7", "psr-17", "psr-18"],
-	"homepage": "https://github.com/sunrise-php/http-client-curl",
-	"license": "MIT",
-	"authors": [{
-		"name": "Anatoly Fenric",
-		"email": "anatoly@fenric.ru",
-		"homepage": "https://anatoly.fenric.ru/"
-	}],
-	"require": {
+    "name": "sunrise/http-client-curl",
+    "description": "Sunrise HTTP Client based on a cURL",
+    "keywords": ["fenric", "sunrise", "http-client", "curl", "psr-2", "psr-7", "psr-17", "psr-18"],
+    "homepage": "https://github.com/sunrise-php/http-client-curl",
+    "license": "MIT",
+    "authors": [{
+        "name": "Anatoly Fenric",
+        "email": "anatoly@fenric.ru",
+        "homepage": "https://anatoly.fenric.ru/"
+    }],
+    "require": {
         "php": "^7.1",
         "ext-curl": "*",
         "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0",
-		"psr/http-message": "^1.0"
-	},
-	"require-dev": {
-		"phpunit/phpunit": "7.5.1",
+        "psr/http-message": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "7.5.1",
         "phpunit/php-code-coverage": "^6.1",
         "sunrise/http-factory": "^1.0"
-	},
+    },
     "provide": {
         "php-http/client-implementation": "1.0"
     },
-	"autoload": {
-		"psr-4": {
-			"Sunrise\\Http\\Client\\Curl\\": "src/"
-		}
-	},
+    "autoload": {
+        "psr-4": {
+            "Sunrise\\Http\\Client\\Curl\\": "src/"
+        }
+    },
     "scripts": {
         "test": [
             "phpunit --colors=always --coverage-text",
