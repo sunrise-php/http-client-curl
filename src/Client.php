@@ -150,6 +150,28 @@ class Client implements ClientInterface
     }
 
     /**
+     * Manipulate $curlOptions array
+     *
+     * @param array $curlOptions
+     *
+     * @return void
+     */
+    public function setCurlOptions(array $curlOptions) : void
+    {
+        $this->curlOptions = $this->curlOptions + $curlOptions;
+    }
+
+    /**
+     * Get protected $curlOptions array
+     *
+     * @return array
+     */
+    public function getCurlOptions() : array
+    {
+        return $this->curlOptions;
+    }
+
+    /**
      * Supplements options for a cURL session from the given request message
      *
      * @param RequestInterface $request
@@ -160,16 +182,19 @@ class Client implements ClientInterface
     {
         $options = $this->curlOptions;
 
-        $options[CURLOPT_RETURNTRANSFER] = true;
-        $options[CURLOPT_HEADER]         = true;
-        $options[CURLOPT_CUSTOMREQUEST]  = $request->getMethod();
-        $options[CURLOPT_URL]            = (string) $request->getUri();
-        $options[CURLOPT_POSTFIELDS]     = (string) $request->getBody();
+        $options[CURLOPT_RETURNTRANSFER] = $options[CURLOPT_RETURNTRANSFER] ?? true;
+        $options[CURLOPT_HEADER]         = $options[CURLOPT_HEADER] ?? true;
+        $options[CURLOPT_CUSTOMREQUEST]  = $options[CURLOPT_CUSTOMREQUEST] ?? $request->getMethod();
+        $options[CURLOPT_URL]            = $options[CURLOPT_URL] ?? (string) $request->getUri();
+        $options[CURLOPT_POSTFIELDS]     = $options[CURLOPT_POSTFIELDS] ?? (string) $request->getBody();
+        $options[CURLOPT_HTTPHEADER]     = $options[CURLOPT_HTTPHEADER] ?? [];
 
         foreach ($request->getHeaders() as $name => $values) {
             foreach ($values as $value) {
                 $header = sprintf('%s: %s', $name, $value);
-                $options[CURLOPT_HTTPHEADER][] = $header;
+                if (!in_array($header, $options[CURLOPT_HTTPHEADER])) {
+                    $options[CURLOPT_HTTPHEADER][] = $header;
+                }
             }
         }
 

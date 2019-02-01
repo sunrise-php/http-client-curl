@@ -17,6 +17,10 @@ use Sunrise\Http\Factory\RequestFactory;
 use Sunrise\Http\Factory\ResponseFactory;
 use Sunrise\Http\Factory\StreamFactory;
 
+use const CURLOPT_URL;
+use const CURLOPT_POST;
+use const CURLOPT_HEADER;
+
 class ClientTest extends TestCase
 {
     public function testConstructor()
@@ -95,5 +99,30 @@ class ClientTest extends TestCase
         $this->assertEquals($message, $exception->getMessage());
         $this->assertEquals($code, $exception->getCode());
         $this->assertEquals($previous, $exception->getPrevious());
+    }
+
+    public function testSetCurlOptions()
+    {
+        $client = new Client(new ResponseFactory(), new StreamFactory());
+        $curlOptions = [
+            CURLOPT_URL => 'https://github.com',
+            CURLOPT_POST => true,
+            CURLOPT_HEADER => false,
+        ];
+        $client->setCurlOptions($curlOptions);
+
+        $this->assertEquals($curlOptions, $client->getCurlOptions());
+    }
+
+    public function testGetCurlOptions()
+    {
+        $curlOptions = [
+            CURLOPT_URL => 'https://github.com',
+            CURLOPT_POST => true,
+            CURLOPT_HEADER => false,
+        ];
+        $client = new Client(new ResponseFactory(), new StreamFactory(), $curlOptions);
+
+        $this->assertEquals($curlOptions, $client->getCurlOptions());
     }
 }
