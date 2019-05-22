@@ -15,13 +15,12 @@ use Sunrise\Http\Client\Curl\Exception\RequestException;
 use Sunrise\Http\Client\Curl\Client;
 use Sunrise\Http\Factory\RequestFactory;
 use Sunrise\Http\Factory\ResponseFactory;
-use Sunrise\Http\Factory\StreamFactory;
 
 class ClientTest extends TestCase
 {
     public function testConstructor()
     {
-        $client = new Client(new ResponseFactory(), new StreamFactory());
+        $client = new Client(new ResponseFactory());
         $this->assertInstanceOf(ClientInterface::class, $client);
     }
 
@@ -29,7 +28,7 @@ class ClientTest extends TestCase
     {
         $url = 'https://raw.githubusercontent.com';
         $url .= '/sunrise-php/http-client-curl/dea2ea60d8d5b9f0839d8dba8cd714213c1c2b50/LICENSE';
-        $client = new Client(new ResponseFactory(), new StreamFactory());
+        $client = new Client(new ResponseFactory());
         $request = (new RequestFactory)->createRequest('GET', $url);
         $response = $client->sendRequest($request);
         $this->assertInstanceOf(ResponseInterface::class, $response);
@@ -40,7 +39,7 @@ class ClientTest extends TestCase
 
     public function testSendRequestWithEmptyUri()
     {
-        $client = new Client(new ResponseFactory(), new StreamFactory());
+        $client = new Client(new ResponseFactory());
         $request = (new RequestFactory)->createRequest('GET', '');
 
         $this->expectException(NetworkExceptionInterface::class);

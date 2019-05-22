@@ -18,7 +18,6 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Sunrise\Http\Client\Curl\Exception\ClientException;
 use Sunrise\Http\Client\Curl\Exception\NetworkException;
 
@@ -51,7 +50,7 @@ use const CURLOPT_RETURNTRANSFER;
 use const CURLOPT_URL;
 
 /**
- * HTTP Client based on CURL
+ * HTTP Client based on cURL
  *
  * @link http://php.net/manual/en/intro.curl.php
  * @link https://curl.haxx.se/libcurl/c/libcurl-errors.html
@@ -71,14 +70,7 @@ class Client implements ClientInterface
     protected $responseFactory;
 
     /**
-     * Stream Factory
-     *
-     * @var StreamFactoryInterface
-     */
-    protected $streamFactory;
-
-    /**
-     * CURL options
+     * cURL options
      *
      * @var array
      */
@@ -88,16 +80,13 @@ class Client implements ClientInterface
      * Constructor of the class
      *
      * @param ResponseFactoryInterface $responseFactory
-     * @param StreamFactoryInterface $streamFactory
      * @param array $curlOptions
      */
     public function __construct(
         ResponseFactoryInterface $responseFactory,
-        StreamFactoryInterface $streamFactory,
         array $curlOptions = []
     ) {
         $this->responseFactory = $responseFactory;
-        $this->streamFactory = $streamFactory;
         $this->curlOptions = $curlOptions;
     }
 
@@ -111,12 +100,12 @@ class Client implements ClientInterface
     {
         $handle = curl_init();
         if (false === $handle) {
-            throw new ClientException('Unable to initialize a cURL session');
+            throw new ClientException('Unable to initialize cURL session');
         }
 
-        $options = $this->padCurlOptions($request);
+        $options = $this->prepareCurlOptions($request);
         if (false === curl_setopt_array($handle, $options)) {
-            throw new ClientException('Unable to configure a cURL session');
+            throw new ClientException('Unable to configure cURL session');
         }
 
         $result = curl_exec($handle);
@@ -129,8 +118,8 @@ class Client implements ClientInterface
         $responseHeadersPart = substr($result, 0, $responseHeadersPartSize);
         $responseBodyPart = substr($result, $responseHeadersPartSize);
 
-        $response = $this->responseFactory->createResponse($responseStatusCode)
-        ->withBody($this->streamFactory->createStream($responseBodyPart));
+        $response = $this->responseFactory->createResponse($responseStatusCode);
+        $response->getBody()->write($responseBodyPart);
 
         foreach (explode("\n", $responseHeadersPart) as $header) {
             $colonPosition = strpos($header, ':');
@@ -150,13 +139,13 @@ class Client implements ClientInterface
     }
 
     /**
-     * Supplements options for a cURL session from the given request message
+     * Supplements cURL session options from the given request message
      *
      * @param RequestInterface $request
      *
      * @return array
      */
-    protected function padCurlOptions(RequestInterface $request) : array
+    protected function prepareCurlOptions(RequestInterface $request) : array
     {
         $options = $this->curlOptions;
 
@@ -168,8 +157,7 @@ class Client implements ClientInterface
 
         foreach ($request->getHeaders() as $name => $values) {
             foreach ($values as $value) {
-                $header = sprintf('%s: %s', $name, $value);
-                $options[CURLOPT_HTTPHEADER][] = $header;
+                $options[CURLOPT_HTTPHEADER][] = sprintf('%s: %s', $name, $value);
             }
         }
 

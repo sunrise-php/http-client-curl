@@ -10,7 +10,7 @@
 
 ## Installation
 
-```
+```bash
 composer require sunrise/http-client-curl
 ```
 
@@ -26,9 +26,8 @@ composer require sunrise/http-factory
 use Sunrise\Http\Client\Curl\Client;
 use Sunrise\Http\Factory\RequestFactory;
 use Sunrise\Http\Factory\ResponseFactory;
-use Sunrise\Http\Factory\StreamFactory;
 
-$client = new Client(new ResponseFactory(), new StreamFactory());
+$client = new Client(new ResponseFactory());
 $request = (new RequestFactory)->createRequest('GET', 'http://php.net/');
 $response = $client->sendRequest($request);
 
@@ -45,9 +44,8 @@ composer require zendframework/zend-diactoros
 use Sunrise\Http\Client\Curl\Client;
 use Zend\Diactoros\RequestFactory;
 use Zend\Diactoros\ResponseFactory;
-use Zend\Diactoros\StreamFactory;
 
-$client = new Client(new ResponseFactory(), new StreamFactory());
+$client = new Client(new ResponseFactory());
 $request = (new RequestFactory)->createRequest('GET', 'http://php.net/');
 $response = $client->sendRequest($request);
 
@@ -57,7 +55,7 @@ $response = $client->sendRequest($request);
 ### cURL options
 
 ```php
-$client = new Client(new ResponseFactory(), new StreamFactory(), [
+$client = new Client(new ResponseFactory(), [
     \CURLOPT_AUTOREFERER => true,
     \CURLOPT_FOLLOWLOCATION => true,
     \CURLOPT_MAXREDIRS => 10,
