@@ -46,6 +46,7 @@ class NetworkException extends ClientException implements NetworkExceptionInterf
         Throwable $previous = null
     ) {
         $this->request = $request;
+
         parent::__construct($message, $code, $previous);
     }
 

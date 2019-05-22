@@ -46,6 +46,7 @@ class RequestException extends ClientException implements RequestExceptionInterf
         Throwable $previous = null
     ) {
         $this->request = $request;
+
         parent::__construct($message, $code, $previous);
     }
 
