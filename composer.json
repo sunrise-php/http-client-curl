@@ -1,7 +1,17 @@
 {
     "name": "sunrise/http-client-curl",
-    "description": "Sunrise HTTP cURL client for PHP 7.1+ based on PSR-18",
-    "keywords": ["fenric", "sunrise", "http-client", "curl", "psr-2", "psr-7", "psr-17", "psr-18"],
+    "description": "Sunrise // HTTP cURL client for PHP 7.1+ based on PSR-18",
+    "keywords": [
+        "fenric",
+        "sunrise",
+        "http",
+        "http-client",
+        "curl",
+        "psr-2",
+        "psr-7",
+        "psr-17",
+        "psr-18"
+    ],
     "homepage": "https://github.com/sunrise-php/http-client-curl",
     "license": "MIT",
     "authors": [
@@ -21,12 +31,12 @@
         "ext-curl": "*",
         "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0",
-        "psr/http-message": "^1.0",
-        "sunrise/coding-standard": "^1.0"
+        "psr/http-message": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "7.5.6",
         "phpunit/php-code-coverage": "6.1.4",
+        "sunrise/coding-standard": "^1.0",
         "sunrise/http-factory": "1.0.6"
     },
     "provide": {

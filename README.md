@@ -1,4 +1,4 @@
-## HTTP cURL client for PHP 7.1+ based on PSR-18
+## Sunrise // HTTP cURL client for PHP 7.1+ based on PSR-18
 
 [![Gitter](https://badges.gitter.im/sunrise-php/support.png)](https://gitter.im/sunrise-php/support)
 [![Build Status](https://api.travis-ci.com/sunrise-php/http-client-curl.svg?branch=master)](https://travis-ci.com/sunrise-php/http-client-curl)
