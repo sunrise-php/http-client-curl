@@ -42,6 +42,7 @@ use function trim;
  */
 use const CURLINFO_HEADER_SIZE;
 use const CURLINFO_RESPONSE_CODE;
+use const CURLINFO_TOTAL_TIME;
 use const CURLOPT_CUSTOMREQUEST;
 use const CURLOPT_HEADER;
 use const CURLOPT_HTTPHEADER;
@@ -63,6 +64,13 @@ class Client implements ClientInterface
 {
 
     /**
+     * HTTP header name for request time
+     *
+     * @var string
+     */
+    protected const HTTP_HEADER_NAME_FOR_REQUEST_TIME = 'X-Request-Time';
+
+    /**
      * Response Factory
      *
      * @var ResponseFactoryInterface
@@ -75,6 +83,13 @@ class Client implements ClientInterface
      * @var array
      */
     protected $curlOptions;
+
+    /**
+     * cURL handle
+     *
+     * @var null|resource
+     */
+    protected $curlHandle;
 
     /**
      * Constructor of the class
@@ -92,75 +107,119 @@ class Client implements ClientInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @throws ClientException
-     * @throws NetworkException
      */
     public function sendRequest(RequestInterface $request) : ResponseInterface
     {
-        $handle = curl_init();
-        if (false === $handle) {
+        $this->curlInitialize();
+        $this->curlConfigure($request);
+
+        return $this->curlExecute($request);
+    }
+
+    /**
+     * @return void
+     *
+     * @throws ClientException
+     */
+    protected function curlInitialize() : void
+    {
+        $this->curlHandle = curl_init();
+
+        if (false === $this->curlHandle) {
             throw new ClientException('Unable to initialize cURL session');
         }
+    }
 
-        $options = $this->prepareCurlOptions($request);
-        if (false === curl_setopt_array($handle, $options)) {
+    /**
+     * @param RequestInterface $request
+     *
+     * @return void
+     *
+     * @throws ClientException
+     */
+    protected function curlConfigure(RequestInterface $request) : void
+    {
+        $curlOptions = $this->curlOptions;
+
+        $curlOptions[CURLOPT_RETURNTRANSFER] = true;
+        $curlOptions[CURLOPT_HEADER]         = true;
+        $curlOptions[CURLOPT_CUSTOMREQUEST]  = $request->getMethod();
+        $curlOptions[CURLOPT_URL]            = (string) $request->getUri();
+        $curlOptions[CURLOPT_POSTFIELDS]     = (string) $request->getBody();
+
+        foreach ($request->getHeaders() as $name => $values) {
+            foreach ($values as $value) {
+                $curlOptions[CURLOPT_HTTPHEADER][] = sprintf('%s: %s', $name, $value);
+            }
+        }
+
+        $result = curl_setopt_array($this->curlHandle, $curlOptions);
+
+        if (false === $result) {
             throw new ClientException('Unable to configure cURL session');
         }
+    }
 
-        $result = curl_exec($handle);
+    /**
+     * @param RequestInterface $request
+     *
+     * @return ResponseInterface
+     *
+     * @throws NetworkException
+     */
+    protected function curlExecute(RequestInterface $request) : ResponseInterface
+    {
+        $result = curl_exec($this->curlHandle);
+
         if (false === $result) {
-            throw new NetworkException($request, curl_error($handle), curl_errno($handle));
+            throw new NetworkException($request, curl_error($this->curlHandle), curl_errno($this->curlHandle));
         }
 
-        $responseStatusCode = curl_getinfo($handle, CURLINFO_RESPONSE_CODE);
-        $responseHeadersPartSize = curl_getinfo($handle, CURLINFO_HEADER_SIZE);
-        $responseHeadersPart = substr($result, 0, $responseHeadersPartSize);
-        $responseBodyPart = substr($result, $responseHeadersPartSize);
+        $metadata = [];
+        $metadata[CURLINFO_TOTAL_TIME] = curl_getinfo($this->curlHandle, CURLINFO_TOTAL_TIME);
+        $metadata[CURLINFO_RESPONSE_CODE] = curl_getinfo($this->curlHandle, CURLINFO_RESPONSE_CODE);
+        $metadata[CURLINFO_HEADER_SIZE] = curl_getinfo($this->curlHandle, CURLINFO_HEADER_SIZE);
 
-        $response = $this->responseFactory->createResponse($responseStatusCode);
-        $response->getBody()->write($responseBodyPart);
+        $rawHeaders = substr($result, 0, $metadata[CURLINFO_HEADER_SIZE]);
+        $rawBody = substr($result, $metadata[CURLINFO_HEADER_SIZE]);
 
-        foreach (explode("\n", $responseHeadersPart) as $header) {
-            $colonPosition = strpos($header, ':');
+        $response = $this->responseFactory->createResponse($metadata[CURLINFO_RESPONSE_CODE]);
+        $response = $this->parseHeaders($rawHeaders, $response);
+        $response->getBody()->write($rawBody);
 
-            if (false === $colonPosition) { // Status Line
-                continue;
-            } elseif (0 === $colonPosition) { // HTTP/2 Field
-                continue;
-            }
+        $response = $response->withAddedHeader(
+            static::HTTP_HEADER_NAME_FOR_REQUEST_TIME,
+            sprintf('%.3f ms', $metadata[CURLINFO_TOTAL_TIME] * 1000)
+        );
 
-            list($name, $value) = explode(':', $header, 2);
-            $response = $response->withAddedHeader(trim($name), trim($value));
-        }
+        curl_close($this->curlHandle);
+        $this->curlHandle = null;
 
-        curl_close($handle);
         return $response;
     }
 
     /**
-     * Supplements cURL session options from the given request message
+     * @param string $headers
+     * @param ResponseInterface $response
      *
-     * @param RequestInterface $request
-     *
-     * @return array
+     * @return ResponseInterface
      */
-    protected function prepareCurlOptions(RequestInterface $request) : array
+    protected function parseHeaders(string $headers, ResponseInterface $response) : ResponseInterface
     {
-        $options = $this->curlOptions;
+        foreach (explode("\n", $headers) as $header) {
+            $colpos = strpos($header, ':');
 
-        $options[CURLOPT_RETURNTRANSFER] = true;
-        $options[CURLOPT_HEADER]         = true;
-        $options[CURLOPT_CUSTOMREQUEST]  = $request->getMethod();
-        $options[CURLOPT_URL]            = (string) $request->getUri();
-        $options[CURLOPT_POSTFIELDS]     = (string) $request->getBody();
-
-        foreach ($request->getHeaders() as $name => $values) {
-            foreach ($values as $value) {
-                $options[CURLOPT_HTTPHEADER][] = sprintf('%s: %s', $name, $value);
+            if (false === $colpos) { // Status Line
+                continue;
+            } elseif (0 === $colpos) { // HTTP/2 Field
+                continue;
             }
+
+            list($name, $value) = explode(':', $header, 2);
+
+            $response = $response->withAddedHeader(trim($name), trim($value));
         }
 
-        return $options;
+        return $response;
     }
 }

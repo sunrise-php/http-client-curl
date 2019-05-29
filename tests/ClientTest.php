@@ -35,6 +35,7 @@ class ClientTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('OK', $response->getReasonPhrase());
         $this->assertEquals('text/plain; charset=utf-8', $response->getHeaderLine('content-type'));
+        $this->assertTrue($response->hasHeader('X-Request-Time'));
     }
 
     public function testSendRequestWithEmptyUri()
