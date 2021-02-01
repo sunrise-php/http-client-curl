@@ -1,12 +1,14 @@
-## Sunrise // HTTP cURL client for PHP 7.1+ based on PSR-18
+## HTTP cURL client for PHP 7.1+ (incl. PHP 8) based on PSR-18
 
 [![Gitter](https://badges.gitter.im/sunrise-php/support.png)](https://gitter.im/sunrise-php/support)
-[![Build Status](https://api.travis-ci.com/sunrise-php/http-client-curl.svg?branch=master)](https://travis-ci.com/sunrise-php/http-client-curl)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/?branch=master)
+[![Build Status](https://circleci.com/gh/sunrise-php/http-client-curl.svg?style=shield)](https://circleci.com/gh/sunrise-php/http-client-curl)
 [![Code Coverage](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/?branch=master)
-[![Latest Stable Version](https://poser.pugx.org/sunrise/http-client-curl/v/stable)](https://packagist.org/packages/sunrise/http-client-curl)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/?branch=master)
 [![Total Downloads](https://poser.pugx.org/sunrise/http-client-curl/downloads)](https://packagist.org/packages/sunrise/http-client-curl)
+[![Latest Stable Version](https://poser.pugx.org/sunrise/http-client-curl/v/stable)](https://packagist.org/packages/sunrise/http-client-curl)
 [![License](https://poser.pugx.org/sunrise/http-client-curl/license)](https://packagist.org/packages/sunrise/http-client-curl)
+
+---
 
 ## Installation
 
@@ -62,15 +64,15 @@ $client = new Client(new ResponseFactory(), [
 ]);
 ```
 
+---
+
 ## Test run
 
 ```bash
-php vendor/bin/phpunit --colors=always --coverage-text
+composer test
 ```
 
-## Api documentation
-
-https://phpdoc.fenric.ru/
+---
 
 ## Useful links
 
