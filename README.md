@@ -64,6 +64,23 @@ $client = new Client(new ResponseFactory(), [
 ]);
 ```
 
+### Asynchronous execution of multiple requests
+
+```php
+$requests = [
+    (new RequestFactory)->createRequest('GET', 'http://php.net/'),
+    (new RequestFactory)->createRequest('GET', 'http://php.net/'),
+    (new RequestFactory)->createRequest('GET', 'http://php.net/'),
+];
+
+$client = new Client(new ResponseFactory());
+$responses = $client->sendRequests(...$request);
+
+foreach ($responses as $response) {
+    // just use PSR-7 Response object...
+}
+```
+
 ---
 
 ## Test run
