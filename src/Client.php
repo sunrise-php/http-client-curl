@@ -30,6 +30,11 @@ use function curl_error;
 use function curl_exec;
 use function curl_getinfo;
 use function curl_init;
+use function curl_multi_init;
+use function curl_multi_exec;
+use function curl_multi_add_handle;
+use function curl_multi_remove_handle;
+use function curl_multi_close;
 use function curl_setopt_array;
 use function explode;
 use function sprintf;
@@ -64,13 +69,6 @@ class Client implements ClientInterface
 {
 
     /**
-     * HTTP header name for request time
-     *
-     * @var string
-     */
-    protected const HTTP_HEADER_NAME_FOR_REQUEST_TIME = 'X-Request-Time';
-
-    /**
      * Response Factory
      *
      * @var ResponseFactoryInterface
@@ -83,13 +81,6 @@ class Client implements ClientInterface
      * @var array
      */
     protected $curlOptions;
-
-    /**
-     * cURL handle
-     *
-     * @var null|resource
-     */
-    protected $curlHandle;
 
     /**
      * Constructor of the class
@@ -110,39 +101,75 @@ class Client implements ClientInterface
      */
     public function sendRequest(RequestInterface $request) : ResponseInterface
     {
-        $this->curlInitialize();
-        $this->curlConfigure($request);
+        $curlHandle = $this->createCurlHandleFromRequest($request);
 
-        return $this->curlExecute($request);
+        $isSuccess = curl_exec($curlHandle);
+        if ($isSuccess === false) {
+            throw new NetworkException($request, curl_error($curlHandle), curl_errno($curlHandle));
+        }
+
+        $response = $this->createResponseFromCurlHandle($curlHandle);
+
+        curl_close($curlHandle);
+
+        return $response;
     }
 
     /**
-     * @return void
+     * Sends the given requests and returns responses in the same order
+     *
+     * @param RequestInterface ...$requests
+     *
+     * @return ResponseInterface[]
      *
      * @throws ClientException
+     * @throws NetworkException
      */
-    protected function curlInitialize() : void
+    public function sendRequests(RequestInterface ...$requests) : array
     {
-        $this->curlHandle = curl_init();
-
-        if (false === $this->curlHandle) {
-            throw new ClientException('Unable to initialize cURL session');
+        $curlMultiHandle = curl_multi_init();
+        if ($curlMultiHandle === false) {
+            throw new ClientException('Unable to create CurlMultiHandle');
         }
+
+        $curlHandles = [];
+        foreach ($requests as $i => $request) {
+            $curlHandles[$i] = $this->createCurlHandleFromRequest($request);
+            curl_multi_add_handle($curlMultiHandle, $curlHandles[$i]);
+        }
+
+        do {
+           curl_multi_exec($curlMultiHandle, $active);
+        } while ($active);
+
+        $responses = [];
+        foreach ($curlHandles as $i => $curlHandle) {
+            $responses[$i] = $this->createResponseFromCurlHandle($curlHandle);
+            curl_multi_remove_handle($curlMultiHandle, $curlHandle);
+            curl_close($curlHandle);
+        }
+
+        curl_multi_close($curlMultiHandle);
+
+        return $responses;
     }
 
     /**
+     * Creates CurlHandle using the given Request
+     *
      * @param RequestInterface $request
      *
-     * @return void
+     * @return resource
      *
      * @throws ClientException
      */
-    protected function curlConfigure(RequestInterface $request) : void
+    private function createCurlHandleFromRequest(RequestInterface $request)
     {
         $curlOptions = $this->curlOptions;
 
         $curlOptions[CURLOPT_RETURNTRANSFER] = true;
         $curlOptions[CURLOPT_HEADER]         = true;
+
         $curlOptions[CURLOPT_CUSTOMREQUEST]  = $request->getMethod();
         $curlOptions[CURLOPT_URL]            = (string) $request->getUri();
         $curlOptions[CURLOPT_POSTFIELDS]     = (string) $request->getBody();
@@ -153,69 +180,70 @@ class Client implements ClientInterface
             }
         }
 
-        $result = curl_setopt_array($this->curlHandle, $curlOptions);
-
-        if (false === $result) {
-            throw new ClientException('Unable to configure cURL session');
+        $curlHandle = curl_init();
+        if ($curlHandle === false) {
+            throw new ClientException('Unable to create CurlHandle');
         }
+
+        $isSuccess = curl_setopt_array($curlHandle, $curlOptions);
+        if ($isSuccess === false) {
+            throw new ClientException('Unable to configure CurlHandle');
+        }
+
+        return $curlHandle;
     }
 
     /**
-     * @param RequestInterface $request
+     * Creates Response using the given CurlHandle
+     *
+     * @param resource $curlHandle
      *
      * @return ResponseInterface
-     *
-     * @throws NetworkException
      */
-    protected function curlExecute(RequestInterface $request) : ResponseInterface
+    private function createResponseFromCurlHandle($curlHandle) : ResponseInterface
     {
-        $result = curl_exec($this->curlHandle);
+        $rescode = curl_getinfo($curlHandle, CURLINFO_RESPONSE_CODE);
+        $response = $this->responseFactory->createResponse($rescode);
 
-        if (false === $result) {
-            throw new NetworkException($request, curl_error($this->curlHandle), curl_errno($this->curlHandle));
+        $reqtime = curl_getinfo($curlHandle, CURLINFO_TOTAL_TIME);
+        $response = $response->withAddedHeader('X-Request-Time', sprintf('%.3f ms', $reqtime * 1000));
+
+        $message = curl_multi_getcontent($curlHandle);
+        if ($message === null) {
+            return $response;
         }
 
-        $metadata = [];
-        $metadata[CURLINFO_TOTAL_TIME] = curl_getinfo($this->curlHandle, CURLINFO_TOTAL_TIME);
-        $metadata[CURLINFO_RESPONSE_CODE] = curl_getinfo($this->curlHandle, CURLINFO_RESPONSE_CODE);
-        $metadata[CURLINFO_HEADER_SIZE] = curl_getinfo($this->curlHandle, CURLINFO_HEADER_SIZE);
+        $headerSize = curl_getinfo($curlHandle, CURLINFO_HEADER_SIZE);
 
-        $rawHeaders = substr($result, 0, $metadata[CURLINFO_HEADER_SIZE]);
-        $rawBody = substr($result, $metadata[CURLINFO_HEADER_SIZE]);
+        $header = substr($message, 0, $headerSize);
+        $response = $this->fillResponseWithHeaderFields($response, $header);
 
-        $response = $this->responseFactory->createResponse($metadata[CURLINFO_RESPONSE_CODE]);
-        $response = $this->parseHeaders($rawHeaders, $response);
-        $response->getBody()->write($rawBody);
-
-        $response = $response->withAddedHeader(
-            static::HTTP_HEADER_NAME_FOR_REQUEST_TIME,
-            sprintf('%.3f ms', $metadata[CURLINFO_TOTAL_TIME] * 1000)
-        );
-
-        curl_close($this->curlHandle);
-        $this->curlHandle = null;
+        $body = substr($message, $headerSize);
+        $response->getBody()->write($body);
 
         return $response;
     }
 
     /**
-     * @param string $headers
+     * Fills the given Response with the header fields using the given header
+     *
      * @param ResponseInterface $response
+     * @param string $header
      *
      * @return ResponseInterface
      */
-    protected function parseHeaders(string $headers, ResponseInterface $response) : ResponseInterface
+    private function fillResponseWithHeaderFields(ResponseInterface $response, string $header) : ResponseInterface
     {
-        foreach (explode("\n", $headers) as $header) {
-            $colpos = strpos($header, ':');
-
-            if (false === $colpos) { // Status Line
+        $fields = explode("\n", $header);
+        foreach ($fields as $field) {
+            $colpos = strpos($field, ':');
+            if ($colpos === false) { // Status Line
                 continue;
-            } elseif (0 === $colpos) { // HTTP/2 Field
+            } elseif ($colpos === 0) { // HTTP/2 Field
                 continue;
             }
 
-            list($name, $value) = explode(':', $header, 2);
+            list($name, $value) = explode(':', $field, 2);
 
             $response = $response->withAddedHeader(trim($name), trim($value));
         }
