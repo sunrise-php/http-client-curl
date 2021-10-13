@@ -56,7 +56,7 @@ use const CURLOPT_RETURNTRANSFER;
 use const CURLOPT_URL;
 
 /**
- * HTTP Client based on cURL
+ * HTTP client based on cURL
  *
  * @link http://php.net/manual/en/intro.curl.php
  * @link https://curl.haxx.se/libcurl/c/libcurl-errors.html
@@ -69,15 +69,11 @@ class Client implements ClientInterface
 {
 
     /**
-     * Response Factory
-     *
      * @var ResponseFactoryInterface
      */
     protected $responseFactory;
 
     /**
-     * cURL options
-     *
      * @var array
      */
     protected $curlOptions;
@@ -97,7 +93,7 @@ class Client implements ClientInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function sendRequest(RequestInterface $request) : ResponseInterface
     {
@@ -139,7 +135,7 @@ class Client implements ClientInterface
         }
 
         do {
-           curl_multi_exec($curlMultiHandle, $active);
+            curl_multi_exec($curlMultiHandle, $active);
         } while ($active);
 
         $responses = [];
@@ -155,7 +151,7 @@ class Client implements ClientInterface
     }
 
     /**
-     * Creates CurlHandle using the given Request
+     * Creates CurlHandle using the given request
      *
      * @param RequestInterface $request
      *
@@ -194,7 +190,7 @@ class Client implements ClientInterface
     }
 
     /**
-     * Creates Response using the given CurlHandle
+     * Creates response using the given CurlHandle
      *
      * @param resource $curlHandle
      *
@@ -225,7 +221,7 @@ class Client implements ClientInterface
     }
 
     /**
-     * Fills the given Response with the header fields using the given header
+     * Fills the given response with the header fields using the given header
      *
      * @param ResponseInterface $response
      * @param string $header

@@ -14,8 +14,8 @@ namespace Sunrise\Http\Client\Curl\Exception;
 /**
  * Import classes
  */
-use RuntimeException;
 use Psr\Http\Client\ClientExceptionInterface;
+use RuntimeException;
 
 /**
  * ClientException
