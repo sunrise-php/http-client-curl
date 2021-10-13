@@ -1,12 +1,11 @@
-## HTTP cURL client for PHP 7.1+ (incl. PHP 8) based on PSR-18
+# HTTP cURL client for PHP 7.1+ (incl. PHP 8) based on PSR-18
 
-[![Gitter](https://badges.gitter.im/sunrise-php/support.png)](https://gitter.im/sunrise-php/support)
 [![Build Status](https://circleci.com/gh/sunrise-php/http-client-curl.svg?style=shield)](https://circleci.com/gh/sunrise-php/http-client-curl)
 [![Code Coverage](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/?branch=master)
-[![Total Downloads](https://poser.pugx.org/sunrise/http-client-curl/downloads)](https://packagist.org/packages/sunrise/http-client-curl)
-[![Latest Stable Version](https://poser.pugx.org/sunrise/http-client-curl/v/stable)](https://packagist.org/packages/sunrise/http-client-curl)
-[![License](https://poser.pugx.org/sunrise/http-client-curl/license)](https://packagist.org/packages/sunrise/http-client-curl)
+[![Total Downloads](https://poser.pugx.org/sunrise/http-client-curl/downloads?format=flat)](https://packagist.org/packages/sunrise/http-client-curl)
+[![Latest Stable Version](https://poser.pugx.org/sunrise/http-client-curl/v/stable?format=flat)](https://packagist.org/packages/sunrise/http-client-curl)
+[![License](https://poser.pugx.org/sunrise/http-client-curl/license?format=flat)](https://packagist.org/packages/sunrise/http-client-curl)
 
 ---
 
@@ -18,7 +17,7 @@ composer require sunrise/http-client-curl
 
 ## How to use?
 
-### Sunrise HTTP Factory
+### Sunrise
 
 ```bash
 composer require sunrise/http-factory
@@ -33,7 +32,7 @@ $client = new Client(new ResponseFactory());
 $request = (new RequestFactory)->createRequest('GET', 'http://php.net/');
 $response = $client->sendRequest($request);
 
-// just use PSR-7 Response object...
+// just use PSR-7 response...
 ```
 
 ### Zend Diactoros
@@ -51,7 +50,7 @@ $client = new Client(new ResponseFactory());
 $request = (new RequestFactory)->createRequest('GET', 'http://php.net/');
 $response = $client->sendRequest($request);
 
-// just use PSR-7 Response object...
+// just use PSR-7 response...
 ```
 
 ### cURL options
@@ -70,14 +69,13 @@ $client = new Client(new ResponseFactory(), [
 $requests = [
     (new RequestFactory)->createRequest('GET', 'http://php.net/'),
     (new RequestFactory)->createRequest('GET', 'http://php.net/'),
-    (new RequestFactory)->createRequest('GET', 'http://php.net/'),
 ];
 
 $client = new Client(new ResponseFactory());
 $responses = $client->sendRequests(...$request);
 
 foreach ($responses as $response) {
-    // just use PSR-7 Response object...
+    // just use PSR-7 response...
 }
 ```
 
