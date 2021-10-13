@@ -6,7 +6,7 @@
         </include>
     </coverage>
     <testsuites>
-        <testsuite name="Sunrise HTTP CURL Client Test Suite">
+        <testsuite name="sunrise.http.curlClient.testSuite">
             <directory>./tests/</directory>
         </testsuite>
     </testsuites>

@@ -14,9 +14,9 @@ namespace Sunrise\Http\Client\Curl\Exception;
 /**
  * Import classes
  */
-use Throwable;
 use Psr\Http\Client\RequestExceptionInterface;
 use Psr\Http\Message\RequestInterface;
+use Throwable;
 
 /**
  * RequestException
@@ -25,8 +25,6 @@ class RequestException extends ClientException implements RequestExceptionInterf
 {
 
     /**
-     * Request instance
-     *
      * @var RequestInterface
      */
     protected $request;
@@ -37,13 +35,13 @@ class RequestException extends ClientException implements RequestExceptionInterf
      * @param RequestInterface $request
      * @param string $message
      * @param int $code
-     * @param Throwable $previous
+     * @param Throwable|null $previous
      */
     public function __construct(
         RequestInterface $request,
         string $message = '',
         int $code = 0,
-        Throwable $previous = null
+        ?Throwable $previous = null
     ) {
         $this->request = $request;
 
@@ -51,7 +49,7 @@ class RequestException extends ClientException implements RequestExceptionInterf
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getRequest() : RequestInterface
     {

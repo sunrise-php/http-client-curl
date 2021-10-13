@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sunrise\Http\Client\Curl\Tests;
 
 use RuntimeException;
