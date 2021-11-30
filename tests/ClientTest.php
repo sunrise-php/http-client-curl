@@ -34,8 +34,8 @@ class ClientTest extends TestCase
         $request = (new RequestFactory)->createRequest('GET', $url);
         $response = $client->sendRequest($request);
         $this->assertInstanceOf(ResponseInterface::class, $response);
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('text/plain; charset=utf-8', $response->getHeaderLine('content-type'));
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('text/plain; charset=utf-8', $response->getHeaderLine('content-type'));
         $this->assertTrue($response->hasHeader('X-Request-Time'));
     }
 
@@ -55,14 +55,14 @@ class ClientTest extends TestCase
         $responses = $client->sendRequests(...$requests);
 
         $this->assertInstanceOf(ResponseInterface::class, $responses[0]);
-        $this->assertEquals(200, $responses[0]->getStatusCode());
-        $this->assertEquals('OK', $responses[0]->getReasonPhrase());
-        $this->assertEquals('text/plain; charset=utf-8', $responses[0]->getHeaderLine('content-type'));
+        $this->assertSame(200, $responses[0]->getStatusCode());
+        $this->assertSame('OK', $responses[0]->getReasonPhrase());
+        $this->assertSame('text/plain; charset=utf-8', $responses[0]->getHeaderLine('content-type'));
         $this->assertTrue($responses[0]->hasHeader('X-Request-Time'));
 
         $this->assertInstanceOf(ResponseInterface::class, $responses[1]);
-        $this->assertEquals(200, $responses[1]->getStatusCode());
-        $this->assertEquals('text/plain; charset=utf-8', $responses[1]->getHeaderLine('content-type'));
+        $this->assertSame(200, $responses[1]->getStatusCode());
+        $this->assertSame('text/plain; charset=utf-8', $responses[1]->getHeaderLine('content-type'));
         $this->assertTrue($responses[1]->hasHeader('X-Request-Time'));
     }
 
@@ -86,9 +86,9 @@ class ClientTest extends TestCase
         $this->assertInstanceOf(RuntimeException::class, $exception);
         $this->assertInstanceOf(ClientExceptionInterface::class, $exception);
 
-        $this->assertEquals($message, $exception->getMessage());
-        $this->assertEquals($code, $exception->getCode());
-        $this->assertEquals($previous, $exception->getPrevious());
+        $this->assertSame($message, $exception->getMessage());
+        $this->assertSame($code, $exception->getCode());
+        $this->assertSame($previous, $exception->getPrevious());
     }
 
     public function testNetworkException()
@@ -102,10 +102,10 @@ class ClientTest extends TestCase
         $this->assertInstanceOf(ClientException::class, $exception);
         $this->assertInstanceOf(NetworkExceptionInterface::class, $exception);
 
-        $this->assertEquals($request, $exception->getRequest());
-        $this->assertEquals($message, $exception->getMessage());
-        $this->assertEquals($code, $exception->getCode());
-        $this->assertEquals($previous, $exception->getPrevious());
+        $this->assertSame($request, $exception->getRequest());
+        $this->assertSame($message, $exception->getMessage());
+        $this->assertSame($code, $exception->getCode());
+        $this->assertSame($previous, $exception->getPrevious());
     }
 
     public function testRequestException()
@@ -119,9 +119,9 @@ class ClientTest extends TestCase
         $this->assertInstanceOf(ClientException::class, $exception);
         $this->assertInstanceOf(RequestExceptionInterface::class, $exception);
 
-        $this->assertEquals($request, $exception->getRequest());
-        $this->assertEquals($message, $exception->getMessage());
-        $this->assertEquals($code, $exception->getCode());
-        $this->assertEquals($previous, $exception->getPrevious());
+        $this->assertSame($request, $exception->getRequest());
+        $this->assertSame($message, $exception->getMessage());
+        $this->assertSame($code, $exception->getCode());
+        $this->assertSame($previous, $exception->getPrevious());
     }
 }
