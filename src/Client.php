@@ -37,6 +37,7 @@ use function curl_multi_remove_handle;
 use function curl_multi_close;
 use function curl_setopt_array;
 use function explode;
+use function in_array;
 use function sprintf;
 use function strpos;
 use function substr;
@@ -168,7 +169,10 @@ class Client implements ClientInterface
 
         $curlOptions[CURLOPT_CUSTOMREQUEST]  = $request->getMethod();
         $curlOptions[CURLOPT_URL]            = (string) $request->getUri();
-        $curlOptions[CURLOPT_POSTFIELDS]     = (string) $request->getBody();
+
+        if (!in_array($request->getMethod(), ['GET', 'HEAD'], true)) {
+            $curlOptions[CURLOPT_POSTFIELDS] = (string) $request->getBody();
+        }
 
         foreach ($request->getHeaders() as $name => $values) {
             foreach ($values as $value) {
