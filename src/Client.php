@@ -208,8 +208,8 @@ class Client implements ClientInterface
         $response = $this->responseFactory->createResponse($statusCode);
 
         /** @var float */
-        $totalTime = curl_getinfo($curlHandle, CURLINFO_TOTAL_TIME);
-        $response = $response->withAddedHeader('X-Request-Time', sprintf('%.3f ms', $totalTime * 1000));
+        $requestTime = curl_getinfo($curlHandle, CURLINFO_TOTAL_TIME);
+        $response = $response->withAddedHeader('X-Request-Time', sprintf('%.3f ms', $requestTime * 1000));
 
         /** @var ?string */
         $message = curl_multi_getcontent($curlHandle);
@@ -219,7 +219,6 @@ class Client implements ClientInterface
 
         /** @var int */
         $headerSize = curl_getinfo($curlHandle, CURLINFO_HEADER_SIZE);
-
         $header = substr($message, 0, $headerSize);
         $response = $this->populateResponseWithHeaderFields($response, $header);
 
