@@ -7,19 +7,19 @@
         "fenric",
         "sunrise",
         "http",
-        "http-client",
+        "client",
         "curl",
         "psr-2",
         "psr-7",
         "psr-17",
         "psr-18",
-        "php7",
-        "php8"
+        "php-7",
+        "php-8"
     ],
     "authors": [
         {
             "name": "Anatoly Fenric",
-            "email": "anatoly@fenric.ru",
+            "email": "afenric@gmail.com",
             "homepage": "https://github.com/fenric"
         },
         {
@@ -28,6 +28,10 @@
             "homepage": "https://github.com/peter279k"
         }
     ],
+    "provide": {
+        "psr/http-client-implementation": "1.0",
+        "php-http/client-implementation": "1.0"
+    },
     "require": {
         "php": "^7.1|^8.0",
         "ext-curl": "*",
@@ -38,11 +42,7 @@
     "require-dev": {
         "phpunit/phpunit": "7.5.20|9.5.0",
         "sunrise/coding-standard": "1.0.0",
-        "sunrise/http-factory": "1.1.0"
-    },
-    "provide": {
-        "psr/http-client-implementation": "1.0",
-        "php-http/client-implementation": "1.0"
+        "sunrise/http-factory": "2.0.0"
     },
     "autoload": {
         "psr-4": {

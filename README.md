@@ -15,9 +15,7 @@
 composer require sunrise/http-client-curl
 ```
 
-## How to use?
-
-### Sunrise
+## QuickStart
 
 ```bash
 composer require sunrise/http-factory
@@ -35,25 +33,9 @@ $response = $client->sendRequest($request);
 // just use PSR-7 response...
 ```
 
-### Zend Diactoros
-
-```bash
-composer require zendframework/zend-diactoros
-```
-
-```php
-use Sunrise\Http\Client\Curl\Client;
-use Zend\Diactoros\RequestFactory;
-use Zend\Diactoros\ResponseFactory;
-
-$client = new Client(new ResponseFactory());
-$request = (new RequestFactory)->createRequest('GET', 'http://php.net/');
-$response = $client->sendRequest($request);
-
-// just use PSR-7 response...
-```
-
 ### cURL options
+
+> https://www.php.net/manual/ru/curl.constants.php
 
 ```php
 $client = new Client(new ResponseFactory(), [
@@ -86,8 +68,6 @@ foreach ($responses as $response) {
 ```bash
 composer test
 ```
-
----
 
 ## Useful links
 
