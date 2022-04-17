@@ -1,7 +1,7 @@
 {
     "name": "sunrise/http-client-curl",
     "homepage": "https://github.com/sunrise-php/http-client-curl",
-    "description": "Sunrise // HTTP cURL client for PHP 7.1+ (incl. PHP 8) based on PSR-18",
+    "description": "Simple HTTP cURL client for PHP 7.1+ based on PSR-18",
     "license": "MIT",
     "keywords": [
         "fenric",
@@ -20,7 +20,7 @@
         {
             "name": "Anatoly Fenric",
             "email": "anatoly@fenric.ru",
-            "homepage": "https://anatoly.fenric.ru/"
+            "homepage": "https://github.com/fenric"
         },
         {
             "name": "李昀陞 (Peter)",
@@ -52,6 +52,7 @@
     "scripts": {
         "test": [
             "phpcs",
+            "psalm",
             "XDEBUG_MODE=coverage phpunit --coverage-text --colors=always"
         ],
         "build": [
