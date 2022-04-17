@@ -1,4 +1,4 @@
-# HTTP cURL client for PHP 7.1+ (incl. PHP 8) based on PSR-18
+# Simple HTTP cURL client for PHP 7.1+ based on PSR-18
 
 [![Build Status](https://circleci.com/gh/sunrise-php/http-client-curl.svg?style=shield)](https://circleci.com/gh/sunrise-php/http-client-curl)
 [![Code Coverage](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/?branch=master)

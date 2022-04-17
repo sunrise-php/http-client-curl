@@ -28,41 +28,28 @@ class ClientTest extends TestCase
 
     public function testSendRequest()
     {
-        $url = 'https://raw.githubusercontent.com';
-        $url .= '/sunrise-php/http-client-curl/dea2ea60d8d5b9f0839d8dba8cd714213c1c2b50/LICENSE';
         $client = new Client(new ResponseFactory());
-        $request = (new RequestFactory)->createRequest('GET', $url);
+        $request = (new RequestFactory)->createRequest('GET', 'https://www.php.net/');
         $response = $client->sendRequest($request);
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertSame(200, $response->getStatusCode());
-        $this->assertSame('text/plain; charset=utf-8', $response->getHeaderLine('content-type'));
         $this->assertTrue($response->hasHeader('X-Request-Time'));
     }
 
     public function testSendRequests()
     {
-        $requests = [];
-
-        $url = 'https://raw.githubusercontent.com';
-        $url .= '/sunrise-php/http-client-curl/dea2ea60d8d5b9f0839d8dba8cd714213c1c2b50/LICENSE';
-        $requests[] = (new RequestFactory)->createRequest('GET', $url);
-
-        $url = 'https://raw.githubusercontent.com';
-        $url .= '/sunrise-php/http-client-curl/b52d6cf88186101562ed93d9dbbb909ae82924d4/README.md';
-        $requests[] = (new RequestFactory)->createRequest('GET', $url);
-
         $client = new Client(new ResponseFactory());
+        $requests = [];
+        $requests[] = (new RequestFactory)->createRequest('GET', 'https://www.php.net/');
+        $requests[] = (new RequestFactory)->createRequest('GET', 'https://www.php.net/');
         $responses = $client->sendRequests(...$requests);
 
         $this->assertInstanceOf(ResponseInterface::class, $responses[0]);
         $this->assertSame(200, $responses[0]->getStatusCode());
-        $this->assertSame('OK', $responses[0]->getReasonPhrase());
-        $this->assertSame('text/plain; charset=utf-8', $responses[0]->getHeaderLine('content-type'));
         $this->assertTrue($responses[0]->hasHeader('X-Request-Time'));
 
         $this->assertInstanceOf(ResponseInterface::class, $responses[1]);
         $this->assertSame(200, $responses[1]->getStatusCode());
-        $this->assertSame('text/plain; charset=utf-8', $responses[1]->getHeaderLine('content-type'));
         $this->assertTrue($responses[1]->hasHeader('X-Request-Time'));
     }
 
@@ -78,50 +65,44 @@ class ClientTest extends TestCase
 
     public function testClientException()
     {
-        $message = 'foo';
-        $code = 1;
-        $previous = new RuntimeException('bar');
+        $previous = new RuntimeException();
 
-        $exception = new ClientException($message, $code, $previous);
+        $exception = new ClientException('foo', 42, $previous);
         $this->assertInstanceOf(RuntimeException::class, $exception);
         $this->assertInstanceOf(ClientExceptionInterface::class, $exception);
 
-        $this->assertSame($message, $exception->getMessage());
-        $this->assertSame($code, $exception->getCode());
+        $this->assertSame('foo', $exception->getMessage());
+        $this->assertSame(42, $exception->getCode());
         $this->assertSame($previous, $exception->getPrevious());
     }
 
     public function testNetworkException()
     {
         $request = (new RequestFactory)->createRequest('GET', 'http://php.net/');
-        $message = 'foo';
-        $code = 1;
-        $previous = new RuntimeException('bar');
+        $previous = new RuntimeException();
 
-        $exception = new NetworkException($request, $message, $code, $previous);
+        $exception = new NetworkException($request, 'foo', 42, $previous);
         $this->assertInstanceOf(ClientException::class, $exception);
         $this->assertInstanceOf(NetworkExceptionInterface::class, $exception);
 
         $this->assertSame($request, $exception->getRequest());
-        $this->assertSame($message, $exception->getMessage());
-        $this->assertSame($code, $exception->getCode());
+        $this->assertSame('foo', $exception->getMessage());
+        $this->assertSame(42, $exception->getCode());
         $this->assertSame($previous, $exception->getPrevious());
     }
 
     public function testRequestException()
     {
         $request = (new RequestFactory)->createRequest('GET', 'http://php.net/');
-        $message = 'foo';
-        $code = 1;
-        $previous = new RuntimeException('bar');
+        $previous = new RuntimeException();
 
-        $exception = new RequestException($request, $message, $code, $previous);
+        $exception = new RequestException($request, 'foo', 42, $previous);
         $this->assertInstanceOf(ClientException::class, $exception);
         $this->assertInstanceOf(RequestExceptionInterface::class, $exception);
 
         $this->assertSame($request, $exception->getRequest());
-        $this->assertSame($message, $exception->getMessage());
-        $this->assertSame($code, $exception->getCode());
+        $this->assertSame('foo', $exception->getMessage());
+        $this->assertSame(42, $exception->getCode());
         $this->assertSame($previous, $exception->getPrevious());
     }
 }
