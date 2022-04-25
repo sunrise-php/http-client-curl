@@ -75,7 +75,7 @@ class Client implements ClientInterface
     protected $responseFactory;
 
     /**
-     * @var array
+     * @var array<int, mixed>
      */
     protected $curlOptions;
 
@@ -83,7 +83,7 @@ class Client implements ClientInterface
      * Constructor of the class
      *
      * @param ResponseFactoryInterface $responseFactory
-     * @param array $curlOptions
+     * @param array<int, mixed> $curlOptions
      */
     public function __construct(
         ResponseFactoryInterface $responseFactory,
@@ -117,13 +117,15 @@ class Client implements ClientInterface
      *
      * @param RequestInterface ...$requests
      *
-     * @return ResponseInterface[]
+     * @return array<int, ResponseInterface>
      *
      * @throws ClientException
      * @throws NetworkException
      */
     public function sendRequests(RequestInterface ...$requests) : array
     {
+        /** @var list<RequestInterface> $requests */
+
         $curlMultiHandle = curl_multi_init();
         if ($curlMultiHandle === false) {
             throw new ClientException('Unable to create CurlMultiHandle');
@@ -165,20 +167,21 @@ class Client implements ClientInterface
         $curlOptions = $this->curlOptions;
 
         $curlOptions[CURLOPT_RETURNTRANSFER] = true;
-        $curlOptions[CURLOPT_HEADER]         = true;
+        $curlOptions[CURLOPT_HEADER] = true;
 
-        $curlOptions[CURLOPT_CUSTOMREQUEST]  = $request->getMethod();
-        $curlOptions[CURLOPT_URL]            = (string) $request->getUri();
-
-        if (!in_array($request->getMethod(), ['GET', 'HEAD'], true)) {
-            $curlOptions[CURLOPT_POSTFIELDS] = (string) $request->getBody();
-        }
+        $curlOptions[CURLOPT_CUSTOMREQUEST] = $request->getMethod();
+        $curlOptions[CURLOPT_URL] = $request->getUri()->__toString();
 
         $curlOptions[CURLOPT_HTTPHEADER] = [];
         foreach ($request->getHeaders() as $name => $values) {
             foreach ($values as $value) {
                 $curlOptions[CURLOPT_HTTPHEADER][] = sprintf('%s: %s', $name, $value);
             }
+        }
+
+        $curlOptions[CURLOPT_POSTFIELDS] = null;
+        if (!in_array($request->getMethod(), ['GET', 'HEAD'], true)) {
+            $curlOptions[CURLOPT_POSTFIELDS] = $request->getBody()->__toString();
         }
 
         $curlHandle = curl_init();
@@ -243,22 +246,20 @@ class Client implements ClientInterface
         $fields = explode("\r\n", $header);
 
         foreach ($fields as $field) {
-            // status line
-            if (0 === strpos($field, 'HTTP/')) {
-                continue;
-            }
-
-            // HTTP/2 field
-            if (0 === strpos($field, ':')) {
-                continue;
-            }
-
             // end...
-            if ('' === $field) {
+            if ($field === '') {
+                break;
+            }
+            // status line
+            if (strpos($field, 'HTTP/') === 0) {
+                continue;
+            }
+            // HTTP/2 field
+            if (strpos($field, ':') === 0) {
                 continue;
             }
 
-            [$name, $value] = explode(':', $field, 2);
+            list($name, $value) = explode(':', $field, 2);
 
             $response = $response->withAddedHeader($name, ltrim($value));
         }
