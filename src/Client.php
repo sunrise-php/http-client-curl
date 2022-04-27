@@ -40,7 +40,6 @@ use function explode;
 use function in_array;
 use function ltrim;
 use function sprintf;
-use function strpos;
 use function substr;
 
 /**
@@ -239,27 +238,43 @@ class Client implements ClientInterface
      *
      * @return ResponseInterface
      *
-     * @link https://datatracker.ietf.org/doc/html/rfc2616#section-4.2
+     * @link https://datatracker.ietf.org/doc/html/rfc7230#section-3.2
      */
     private function populateResponseWithHeaderFields(ResponseInterface $response, string $header) : ResponseInterface
     {
         $fields = explode("\r\n", $header);
 
-        foreach ($fields as $field) {
-            // end...
-            if ($field === '') {
-                break;
-            }
-            // status line
-            if (strpos($field, 'HTTP/') === 0) {
-                continue;
-            }
-            // HTTP/2 field
-            if (strpos($field, ':') === 0) {
+        foreach ($fields as $i => $field) {
+            // The first line of a response message is the status-line, consisting
+            // of the protocol version, a space (SP), the status code, another
+            // space, a possibly empty textual phrase describing the status code,
+            // and ending with CRLF.
+            // https://datatracker.ietf.org/doc/html/rfc7230#section-3.1.2
+            if ($i === 0) {
                 continue;
             }
 
-            list($name, $value) = explode(':', $field, 2);
+            // All HTTP/1.1 messages consist of a start-line followed by a sequence
+            // of octets in a format similar to the Internet Message Format:
+            // zero or more header fields (collectively referred to as
+            // the "headers" or the "header section"), an empty line indicating the
+            // end of the header section, and an optional message body.
+            // https://datatracker.ietf.org/doc/html/rfc7230#section-3
+            // https://datatracker.ietf.org/doc/html/rfc5322
+            if ($field === '') {
+                break;
+            }
+
+            // While HTTP/1.x used the message start-line (see [RFC7230],
+            // Section 3.1) to convey the target URI, the method of the request, and
+            // the status code for the response, HTTP/2 uses special pseudo-header
+            // fields beginning with ':' character (ASCII 0x3a) for this purpose.
+            // https://datatracker.ietf.org/doc/html/rfc7540#section-8.1.2.1
+            if ($field[0] === ':') {
+                continue;
+            }
+
+            [$name, $value] = explode(':', $field, 2);
 
             $response = $response->withAddedHeader($name, ltrim($value));
         }
