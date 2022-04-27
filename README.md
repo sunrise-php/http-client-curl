@@ -30,7 +30,7 @@ $client = new Client(new ResponseFactory());
 $request = (new RequestFactory)->createRequest('GET', 'http://php.net/');
 $response = $client->sendRequest($request);
 
-// just use PSR-7 response...
+echo $response->getStatusCode(), PHP_EOL;
 ```
 
 ### cURL options
@@ -45,7 +45,7 @@ $client = new Client(new ResponseFactory(), [
 ]);
 ```
 
-### Asynchronous execution of multiple requests
+### Parallel execution of multiple requests
 
 ```php
 $requests = [
@@ -56,8 +56,9 @@ $requests = [
 $client = new Client(new ResponseFactory());
 $responses = $client->sendRequests(...$request);
 
-foreach ($responses as $response) {
-    // just use PSR-7 response...
+foreach ($responses as $i => $response) {
+    // note that you can get the response's request...
+    echo sprintf('%d <= %s', $response->getStatusCode(), $requests[$i]->getUri()), PHP_EOL;
 }
 ```
 
