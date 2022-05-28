@@ -41,7 +41,6 @@ echo $response->getStatusCode(), PHP_EOL;
 $client = new Client(new ResponseFactory(), [
     \CURLOPT_AUTOREFERER => true,
     \CURLOPT_FOLLOWLOCATION => true,
-    \CURLOPT_MAXREDIRS => 10,
 ]);
 ```
 
@@ -57,8 +56,8 @@ $client = new Client(new ResponseFactory());
 $responses = $client->sendRequests(...$request);
 
 foreach ($responses as $i => $response) {
-    // note that you can get the response's request...
-    echo sprintf('%d <= %s', $response->getStatusCode(), $requests[$i]->getUri()), PHP_EOL;
+    // note that you can get the response's request by its index...
+    echo sprintf('%s => %d', $requests[$i]->getUri(), $response->getStatusCode()), PHP_EOL;
 }
 ```
 
