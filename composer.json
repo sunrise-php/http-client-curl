@@ -9,12 +9,12 @@
         "http",
         "client",
         "curl",
-        "psr-2",
-        "psr-7",
-        "psr-17",
-        "psr-18",
-        "php-7",
-        "php-8"
+        "psr2",
+        "psr7",
+        "psr17",
+        "psr18",
+        "php7",
+        "php8"
     ],
     "authors": [
         {
@@ -33,7 +33,7 @@
         "php-http/client-implementation": "1.0"
     },
     "require": {
-        "php": "^7.1|^8.0",
+        "php": ">=7.4",
         "ext-curl": "*",
         "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0",
