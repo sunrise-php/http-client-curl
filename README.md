@@ -1,6 +1,6 @@
 # Simple HTTP cURL client for PHP 7.1+ based on PSR-18
 
-[![Build Status](https://circleci.com/gh/sunrise-php/http-client-curl.svg?style=shield)](https://circleci.com/gh/sunrise-php/http-client-curl)
+[![Build Status](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/badges/build.png?b=master)](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/build-status/master)
 [![Code Coverage](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/?branch=master)
 [![Total Downloads](https://poser.pugx.org/sunrise/http-client-curl/downloads?format=flat)](https://packagist.org/packages/sunrise/http-client-curl)
