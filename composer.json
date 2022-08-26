@@ -33,7 +33,7 @@
         "php-http/client-implementation": "1.0"
     },
     "require": {
-        "php": ">=7.4",
+        "php": ">=7.1",
         "ext-curl": "*",
         "psr/http-client": "^1.0",
         "psr/http-factory": "^1.0",
