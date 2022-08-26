@@ -43,6 +43,8 @@ build:
     php71:
       environment:
         php: 7.1
+        variables:
+          APACHE_RUN_DIR: /var/run/apache2
       tests:
         override:
           - command: php vendor/bin/phpunit
