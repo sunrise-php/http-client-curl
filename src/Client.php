@@ -226,6 +226,7 @@ final class Client implements ClientInterface
 
         $responseContent = substr($responseMessage, $responseHeaderSize);
         $response->getBody()->write($responseContent);
+        $response->getBody()->rewind();
 
         return $response;
     }
