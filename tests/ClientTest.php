@@ -7,10 +7,10 @@ namespace Sunrise\Http\Client\Curl\Tests;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\NetworkExceptionInterface;
 use Sunrise\Http\Client\Curl\Client;
+use Sunrise\Http\Client\Curl\Exception\ClientException;
 use Sunrise\Http\Client\Curl\MultiRequest;
 use Sunrise\Http\Message\RequestFactory;
 use Sunrise\Http\Message\ResponseFactory;
-use const CURLOPT_VERBOSE;
 
 final class ClientTest extends TestCase
 {
@@ -57,11 +57,11 @@ final class ClientTest extends TestCase
 
     public function testSendMultiRequestWithEmptyUri(): void
     {
-        $client = new Client(new ResponseFactory(), curlOptions: [CURLOPT_VERBOSE => true]);
+        $client = new Client(new ResponseFactory());
         $request = new MultiRequest((new RequestFactory())->createRequest('GET', ''));
 
-        $this->expectException(NetworkExceptionInterface::class);
-        // $this->expectExceptionMessage('<url> malformed');
+        $this->expectException(ClientException::class);
+        $this->expectExceptionMessage('Failed to retrieve response code. Please check the request and verify network accessibility.');
         $client->sendRequest($request);
     }
 }

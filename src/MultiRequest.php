@@ -20,8 +20,6 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 
-use function current;
-
 /**
  * @since 2.0.0
  */
@@ -54,7 +52,7 @@ final class MultiRequest implements RequestInterface
 
     public function getProtocolVersion(): string
     {
-        return current($this->requests)->getProtocolVersion();
+        throw new LogicException('Not implemented.');
     }
 
     public function withProtocolVersion($version): static
@@ -64,22 +62,22 @@ final class MultiRequest implements RequestInterface
 
     public function getHeaders(): array
     {
-        return current($this->requests)->getHeaders();
+        throw new LogicException('Not implemented.');
     }
 
     public function hasHeader($name): bool
     {
-        return current($this->requests)->hasHeader($name);
+        throw new LogicException('Not implemented.');
     }
 
     public function getHeader($name): array
     {
-        return current($this->requests)->getHeader($name);
+        throw new LogicException('Not implemented.');
     }
 
     public function getHeaderLine($name): string
     {
-        return current($this->requests)->getHeaderLine($name);
+        throw new LogicException('Not implemented.');
     }
 
     public function withHeader($name, $value): MessageInterface
@@ -99,7 +97,7 @@ final class MultiRequest implements RequestInterface
 
     public function getBody(): StreamInterface
     {
-        return current($this->requests)->getBody();
+        throw new LogicException('Not implemented.');
     }
 
     public function withBody(StreamInterface $body): MessageInterface
@@ -109,7 +107,7 @@ final class MultiRequest implements RequestInterface
 
     public function getRequestTarget(): string
     {
-        return current($this->requests)->getRequestTarget();
+        throw new LogicException('Not implemented.');
     }
 
     public function withRequestTarget($requestTarget): RequestInterface
@@ -119,7 +117,7 @@ final class MultiRequest implements RequestInterface
 
     public function getMethod(): string
     {
-        return current($this->requests)->getMethod();
+        throw new LogicException('Not implemented.');
     }
 
     public function withMethod($method): RequestInterface
@@ -129,7 +127,7 @@ final class MultiRequest implements RequestInterface
 
     public function getUri(): UriInterface
     {
-        return current($this->requests)->getUri();
+        throw new LogicException('Not implemented.');
     }
 
     public function withUri(UriInterface $uri, $preserveHost = false): RequestInterface

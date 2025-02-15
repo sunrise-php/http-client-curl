@@ -19,8 +19,6 @@ use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
-use function current;
-
 /**
  * @since 2.0.0
  */
@@ -53,7 +51,7 @@ final class MultiResponse implements ResponseInterface
 
     public function getProtocolVersion(): string
     {
-        return current($this->responses)->getProtocolVersion();
+        throw new LogicException('Not implemented.');
     }
 
     public function withProtocolVersion($version): MessageInterface
@@ -63,22 +61,22 @@ final class MultiResponse implements ResponseInterface
 
     public function getHeaders(): array
     {
-        return current($this->responses)->getHeaders();
+        throw new LogicException('Not implemented.');
     }
 
     public function hasHeader($name): bool
     {
-        return current($this->responses)->hasHeader($name);
+        throw new LogicException('Not implemented.');
     }
 
     public function getHeader($name): array
     {
-        return current($this->responses)->getHeader($name);
+        throw new LogicException('Not implemented.');
     }
 
     public function getHeaderLine($name): string
     {
-        return current($this->responses)->getHeaderLine($name);
+        throw new LogicException('Not implemented.');
     }
 
     public function withHeader($name, $value): MessageInterface
@@ -98,7 +96,7 @@ final class MultiResponse implements ResponseInterface
 
     public function getBody(): StreamInterface
     {
-        return current($this->responses)->getBody();
+        throw new LogicException('Not implemented.');
     }
 
     public function withBody(StreamInterface $body): MessageInterface
@@ -108,7 +106,7 @@ final class MultiResponse implements ResponseInterface
 
     public function getStatusCode(): int
     {
-        return current($this->responses)->getStatusCode();
+        throw new LogicException('Not implemented.');
     }
 
     public function withStatus($code, $reasonPhrase = ''): ResponseInterface
@@ -118,6 +116,6 @@ final class MultiResponse implements ResponseInterface
 
     public function getReasonPhrase(): string
     {
-        return current($this->responses)->getReasonPhrase();
+        throw new LogicException('Not implemented.');
     }
 }

@@ -1,11 +1,9 @@
-# Simple HTTP cURL client for PHP 7.1+ based on PSR-18
+# Simple HTTP cURL client for PHP 8.1+ implementing PSR-18
 
 [![Build Status](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/badges/build.png?b=master)](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/build-status/master)
 [![Code Coverage](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/sunrise-php/http-client-curl/?branch=master)
 [![Total Downloads](https://poser.pugx.org/sunrise/http-client-curl/downloads?format=flat)](https://packagist.org/packages/sunrise/http-client-curl)
-[![Latest Stable Version](https://poser.pugx.org/sunrise/http-client-curl/v/stable?format=flat)](https://packagist.org/packages/sunrise/http-client-curl)
-[![License](https://poser.pugx.org/sunrise/http-client-curl/license?format=flat)](https://packagist.org/packages/sunrise/http-client-curl)
 
 ---
 
@@ -15,19 +13,19 @@
 composer require sunrise/http-client-curl
 ```
 
-## QuickStart
+## Quick Start
 
 ```bash
-composer require sunrise/http-factory
+composer require sunrise/http-message
 ```
 
 ```php
 use Sunrise\Http\Client\Curl\Client;
-use Sunrise\Http\Factory\RequestFactory;
-use Sunrise\Http\Factory\ResponseFactory;
+use Sunrise\Http\Message\RequestFactory;
+use Sunrise\Http\Message\ResponseFactory;
 
 $client = new Client(new ResponseFactory());
-$request = (new RequestFactory)->createRequest('GET', 'http://php.net/');
+$request = (new RequestFactory())->createRequest('GET', 'https://www.php.net/');
 $response = $client->sendRequest($request);
 
 echo $response->getStatusCode(), PHP_EOL;
@@ -38,42 +36,45 @@ echo $response->getStatusCode(), PHP_EOL;
 > https://www.php.net/manual/ru/curl.constants.php
 
 ```php
+use Sunrise\Http\Client\Curl\Client;
+use Sunrise\Http\Message\ResponseFactory;
+
+use const CURLOPT_AUTOREFERER;
+use const CURLOPT_FOLLOWLOCATION;
+
 $client = new Client(new ResponseFactory(), [
-    \CURLOPT_AUTOREFERER => true,
-    \CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_AUTOREFERER => true,
+    CURLOPT_FOLLOWLOCATION => true,
 ]);
 ```
 
 ### Parallel execution of multiple requests
 
 ```php
-$requests = [
-    (new RequestFactory)->createRequest('GET', 'http://php.net/'),
-    (new RequestFactory)->createRequest('GET', 'http://php.net/'),
-];
+use Sunrise\Http\Client\Curl\Client;
+use Sunrise\Http\Client\Curl\MultiRequest;
+use Sunrise\Http\Message\RequestFactory;
+use Sunrise\Http\Message\ResponseFactory;
 
 $client = new Client(new ResponseFactory());
-$responses = $client->sendRequests(...$request);
 
-foreach ($responses as $i => $response) {
-    // note that you can get the response's request by its index...
-    echo sprintf('%s => %d', $requests[$i]->getUri(), $response->getStatusCode()), PHP_EOL;
+$multiRequest = new MultiRequest(
+    foo: (new RequestFactory())->createRequest('GET', 'https://www.php.net/'),
+    bar: (new RequestFactory())->createRequest('GET', 'https://www.php.net/'),
+)
+
+$responses = $client->sendRequest($multiRequest)->getResponses();
+
+foreach ($responses as $key => $response) {
+    // Note that you can get the response's request by its key...
+    echo sprintf('%s => %d', $multiRequest->getRequests()[$key]->getUri(), $response->getStatusCode()), PHP_EOL;
 }
 ```
 
 ---
 
-## Test run
+## Tests
 
 ```bash
 composer test
 ```
-
-## Useful links
-
-* http://php.net/manual/en/intro.curl.php
-* https://curl.haxx.se/libcurl/c/libcurl-errors.html
-* https://www.php-fig.org/psr/psr-2/
-* https://www.php-fig.org/psr/psr-7/
-* https://www.php-fig.org/psr/psr-17/
-* https://www.php-fig.org/psr/psr-18/
