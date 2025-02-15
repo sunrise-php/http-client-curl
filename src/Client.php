@@ -39,7 +39,6 @@ use function curl_setopt_array;
 use function explode;
 use function in_array;
 use function ltrim;
-use function preg_split;
 use function sprintf;
 use function strpos;
 use function substr;
@@ -63,7 +62,7 @@ final class Client implements ClientInterface
     private const DEFAULT_CURL_MULTI_SELECT_TIMEOUT = 1.0;
     private const DEFAULT_CURL_MULTI_SELECT_SLEEP_DURATION = 1000;
     private const REQUEST_TIME_HEADER_FIELD_NAME = 'X-Request-Time';
-    private const HEADER_FIELD_SEPARATOR = '/\r\n|\n/';
+    private const HEADER_FIELD_SEPARATOR = "\r\n";
 
     private ?CurlMultiHandle $curlMultiHandle = null;
 
@@ -88,6 +87,8 @@ final class Client implements ClientInterface
 
     /**
      * @inheritDoc
+     *
+     * @return ($request is MultiRequest ? MultiResponse : ResponseInterface)
      */
     public function sendRequest(RequestInterface $request): ResponseInterface
     {
@@ -202,6 +203,12 @@ final class Client implements ClientInterface
     {
         /** @var int $responseStatusCode */
         $responseStatusCode = curl_getinfo($curlHandle, CURLINFO_RESPONSE_CODE);
+        if ($responseStatusCode === 0) {
+            throw new ClientException(
+                'Failed to retrieve response code. Please check the request and verify network accessibility.'
+            );
+        }
+
         $response = $this->responseFactory->createResponse($responseStatusCode);
 
         /** @var float $requestTime */
@@ -225,9 +232,7 @@ final class Client implements ClientInterface
 
     private function populateResponseWithHeaderFields(ResponseInterface $response, string $header): ResponseInterface
     {
-        /** @var array<int, string> $fields */
-        // @phpstan-ignore varTag.nativeType
-        $fields = preg_split(self::HEADER_FIELD_SEPARATOR, $header);
+        $fields = explode(self::HEADER_FIELD_SEPARATOR, $header);
 
         foreach ($fields as $i => $field) {
             // https://datatracker.ietf.org/doc/html/rfc7230#section-3.1.2
@@ -256,14 +261,12 @@ final class Client implements ClientInterface
 
     private function clear(): void
     {
-        if ($this->curlMultiHandle instanceof CurlMultiHandle) {
-            foreach ($this->curlHandles as $curlSingleHandle) {
-                curl_multi_remove_handle($this->curlMultiHandle, $curlSingleHandle);
+        foreach ($this->curlHandles as $curlHandle) {
+            if ($this->curlMultiHandle instanceof CurlMultiHandle) {
+                curl_multi_remove_handle($this->curlMultiHandle, $curlHandle);
             }
-        }
 
-        foreach ($this->curlHandles as $curlSingleHandle) {
-            curl_close($curlSingleHandle);
+            curl_close($curlHandle);
         }
 
         if ($this->curlMultiHandle instanceof CurlMultiHandle) {
