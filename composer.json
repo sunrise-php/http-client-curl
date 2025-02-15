@@ -1,63 +1,70 @@
 {
-    "name": "sunrise/http-client-curl",
-    "homepage": "https://github.com/sunrise-php/http-client-curl",
-    "description": "Simple HTTP cURL client for PHP 7.1+ based on PSR-18",
-    "license": "MIT",
-    "keywords": [
-        "fenric",
-        "sunrise",
-        "http",
-        "client",
-        "curl",
-        "psr2",
-        "psr7",
-        "psr17",
-        "psr18",
-        "php7",
-        "php8"
-    ],
-    "authors": [
-        {
-            "name": "Anatoly Fenric",
-            "email": "afenric@gmail.com",
-            "homepage": "https://github.com/fenric"
-        },
-        {
-            "name": "李昀陞 (Peter)",
-            "email": "peter279k@gmail.com",
-            "homepage": "https://github.com/peter279k"
-        }
-    ],
-    "provide": {
-        "psr/http-client-implementation": "1.0",
-        "php-http/client-implementation": "1.0"
+  "name": "sunrise/http-client-curl",
+  "homepage": "https://github.com/sunrise-php/http-client-curl",
+  "description": "Simple HTTP cURL client for PHP 8.1+ based on PSR-18.",
+  "license": "MIT",
+  "keywords": [
+    "fenric",
+    "sunrise",
+    "http",
+    "client",
+    "curl",
+    "psr-18"
+  ],
+  "authors": [
+    {
+      "name": "Anatoly Nekhay",
+      "email": "afenric@gmail.com",
+      "homepage": "https://github.com/fenric"
     },
-    "require": {
-        "php": ">=7.1",
-        "ext-curl": "*",
-        "psr/http-client": "^1.0",
-        "psr/http-factory": "^1.0",
-        "psr/http-message": "^1.0"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "7.5.20|9.5.0",
-        "sunrise/coding-standard": "1.0.0",
-        "sunrise/http-factory": "2.0.2"
-    },
-    "autoload": {
-        "psr-4": {
-            "Sunrise\\Http\\Client\\Curl\\": "src/"
-        }
-    },
-    "scripts": {
-        "test": [
-            "phpcs",
-            "psalm",
-            "XDEBUG_MODE=coverage phpunit --coverage-text --colors=always"
-        ],
-        "build": [
-            "phpdoc -d src/ -t phpdoc/",
-            "XDEBUG_MODE=coverage phpunit --coverage-html coverage/"
-        ]
+    {
+      "name": "李昀陞 (Peter)",
+      "email": "peter279k@gmail.com",
+      "homepage": "https://github.com/peter279k"
     }
+  ],
+  "require": {
+    "php": ">=8.1",
+    "ext-curl": "*",
+    "psr/http-client": "^1.0",
+    "psr/http-factory": "^1.0",
+    "psr/http-message": "^1.0 || ^2.0"
+  },
+  "require-dev": {
+    "php-di/php-di": "^7.0",
+    "phpstan/phpstan": "^2.1",
+    "phpunit/phpunit": "^10.5",
+    "squizlabs/php_codesniffer": "^3.11",
+    "sunrise/http-message": "^3.4",
+    "vimeo/psalm": "^6.5"
+  },
+  "provide": {
+    "psr/http-client-implementation": "1.0",
+    "php-http/client-implementation": "1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Sunrise\\Http\\Client\\Curl\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Sunrise\\Http\\Client\\Curl\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "phpcs": "@php phpcs --colors",
+    "psalm": "@php psalm --no-cache",
+    "phpstan": "@php phpstan analyse src --configuration=phpstan.neon.php --level=9 --memory-limit=-1",
+    "phpunit": "@php phpunit --colors=always",
+    "test": [
+      "@phpcs",
+      "@psalm",
+      "@phpstan",
+      "@phpunit"
+    ]
+  },
+  "config": {
+    "sort-packages": true
+  }
 }

@@ -4,19 +4,21 @@ declare(strict_types=1);
 
 namespace Sunrise\Http\Client\Curl\Tests;
 
-use RuntimeException;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Client\ClientInterface;
 use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Client\NetworkExceptionInterface;
 use Psr\Http\Client\RequestExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
+use Sunrise\Http\Client\Curl\Client;
 use Sunrise\Http\Client\Curl\Exception\ClientException;
 use Sunrise\Http\Client\Curl\Exception\NetworkException;
 use Sunrise\Http\Client\Curl\Exception\RequestException;
-use Sunrise\Http\Client\Curl\Client;
-use Sunrise\Http\Factory\RequestFactory;
-use Sunrise\Http\Factory\ResponseFactory;
+use Sunrise\Http\Client\Curl\MultiRequest;
+use Sunrise\Http\Client\Curl\MultiResponse;
+use Sunrise\Http\Message\RequestFactory;
+use Sunrise\Http\Message\ResponseFactory;
 
 class ClientTest extends TestCase
 {
@@ -29,7 +31,7 @@ class ClientTest extends TestCase
     public function testSendRequest()
     {
         $client = new Client(new ResponseFactory());
-        $request = (new RequestFactory)->createRequest('GET', 'https://www.php.net/');
+        $request = (new RequestFactory())->createRequest('GET', 'https://www.php.net/');
         $response = $client->sendRequest($request);
         $this->assertInstanceOf(ResponseInterface::class, $response);
         $this->assertSame(200, $response->getStatusCode());
@@ -40,9 +42,11 @@ class ClientTest extends TestCase
     {
         $client = new Client(new ResponseFactory());
         $requests = [];
-        $requests[] = (new RequestFactory)->createRequest('GET', 'https://www.php.net/');
-        $requests[] = (new RequestFactory)->createRequest('GET', 'https://www.php.net/');
-        $responses = $client->sendRequests(...$requests);
+        $requests[] = (new RequestFactory())->createRequest('GET', 'https://www.php.net/');
+        $requests[] = (new RequestFactory())->createRequest('GET', 'https://www.php.net/');
+        /** @var MultiResponse $response */
+        $response = $client->sendRequest(new MultiRequest(...$requests));
+        $responses = $response->getResponses();
 
         $this->assertInstanceOf(ResponseInterface::class, $responses[0]);
         $this->assertSame(200, $responses[0]->getStatusCode());
@@ -56,7 +60,7 @@ class ClientTest extends TestCase
     public function testSendRequestWithEmptyUri()
     {
         $client = new Client(new ResponseFactory());
-        $request = (new RequestFactory)->createRequest('GET', '');
+        $request = (new RequestFactory())->createRequest('GET', '');
 
         $this->expectException(NetworkExceptionInterface::class);
         // $this->expectExceptionMessage('<url> malformed');
@@ -78,7 +82,7 @@ class ClientTest extends TestCase
 
     public function testNetworkException()
     {
-        $request = (new RequestFactory)->createRequest('GET', 'http://php.net/');
+        $request = (new RequestFactory())->createRequest('GET', 'http://php.net/');
         $previous = new RuntimeException();
 
         $exception = new NetworkException($request, 'foo', 42, $previous);
@@ -93,7 +97,7 @@ class ClientTest extends TestCase
 
     public function testRequestException()
     {
-        $request = (new RequestFactory)->createRequest('GET', 'http://php.net/');
+        $request = (new RequestFactory())->createRequest('GET', 'http://php.net/');
         $previous = new RuntimeException();
 
         $exception = new RequestException($request, 'foo', 42, $previous);

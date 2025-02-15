@@ -1,57 +1,34 @@
-<?php declare(strict_types=1);
+<?php
 
 /**
  * It's free open-source software released under the MIT License.
  *
- * @author Anatoly Fenric <anatoly@fenric.ru>
- * @copyright Copyright (c) 2018, Anatoly Fenric
+ * @author Anatoly Nekhay <afenric@gmail.com>
+ * @copyright Copyright (c) 2018, Anatoly Nekhay
  * @license https://github.com/sunrise-php/http-client-curl/blob/master/LICENSE
  * @link https://github.com/sunrise-php/http-client-curl
  */
 
+declare(strict_types=1);
+
 namespace Sunrise\Http\Client\Curl\Exception;
 
-/**
- * Import classes
- */
 use Psr\Http\Client\RequestExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Throwable;
 
-/**
- * RequestException
- */
-class RequestException extends ClientException implements RequestExceptionInterface
+final class RequestException extends ClientException implements RequestExceptionInterface
 {
-
-    /**
-     * @var RequestInterface
-     */
-    protected $request;
-
-    /**
-     * Constructor of the class
-     *
-     * @param RequestInterface $request
-     * @param string $message
-     * @param int $code
-     * @param Throwable|null $previous
-     */
     public function __construct(
-        RequestInterface $request,
+        private readonly RequestInterface $request,
         string $message = '',
         int $code = 0,
         ?Throwable $previous = null
     ) {
         parent::__construct($message, $code, $previous);
-
-        $this->request = $request;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getRequest() : RequestInterface
+    public function getRequest(): RequestInterface
     {
         return $this->request;
     }
