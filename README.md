@@ -71,6 +71,21 @@ foreach ($responses as $key => $response) {
 }
 ```
 
+## PHP-DI definitions
+
+```php
+use DI\ContainerBuilder;
+use Psr\Http\Client\ClientInterface;
+
+$containerBuilder = new ContainerBuilder();
+$containerBuilder->addDefinition(__DIR__ . '/../vendor/sunrise/http-client-curl/resources/definitions/client.php');
+
+$container = $containerBuilder->build();
+
+// See above for usage examples.
+$client = $container->get(ClientInterface::class);
+```
+
 ---
 
 ## Tests
