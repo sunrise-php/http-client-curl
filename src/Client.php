@@ -213,7 +213,7 @@ final class Client implements ClientInterface
 
         /** @var float $requestTime */
         $requestTime = curl_getinfo($curlHandle, CURLINFO_TOTAL_TIME);
-        $formattedRequestTime = sprintf('%.3f ms', $requestTime * 1000);
+        $formattedRequestTime = sprintf('%.3f ms', $requestTime * 1000.);
         $response = $response->withAddedHeader(self::REQUEST_TIME_HEADER_FIELD_NAME, $formattedRequestTime);
 
         /** @var string $responseMessage */
