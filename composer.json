@@ -1,7 +1,7 @@
 {
   "name": "sunrise/http-client-curl",
   "homepage": "https://github.com/sunrise-php/http-client-curl",
-  "description": "Simple HTTP cURL client for PHP 8.1+ implementing PSR-18.",
+  "description": "A simple cURL client implementing PSR-18.",
   "license": "MIT",
   "keywords": [
     "fenric",
