@@ -13,36 +13,18 @@ declare(strict_types=1);
 
 namespace Sunrise\Http\Client\Curl;
 
-use CURLFile;
 use Psr\Http\Message\StreamInterface;
 use Sunrise\Http\Message\Exception\RuntimeException;
-
-use function array_walk_recursive;
 
 /**
  * @since 2.2.0
  */
 final class FormData implements StreamInterface
 {
-    /**
-     * @var array<array-key, mixed>
-     */
-    public readonly array $data;
-
-    /**
-     * @param array<array-key, mixed> $data
-     */
-    public function __construct(array $data)
-    {
-        array_walk_recursive($data, static function (mixed &$value): void {
-            if ($value instanceof StreamInterface) {
-                /** @var string $uri */
-                $uri = $value->getMetadata('uri');
-                $value = new CURLFile($uri);
-            }
-        });
-
-        $this->data = $data;
+    public function __construct(
+        /** @var array<array-key, mixed> */
+        public readonly array $data,
+    ) {
     }
 
     public function __toString(): string

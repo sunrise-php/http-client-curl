@@ -179,7 +179,9 @@ final class Client implements ClientInterface
         $curlOptions[CURLOPT_POSTFIELDS] = null;
         if (!in_array($request->getMethod(), self::BODYLESS_HTTP_METHODS, true)) {
             $body = $request->getBody();
-            $curlOptions[CURLOPT_POSTFIELDS] = ($body instanceof FormData) ? $body->data : (string) $body;
+            $curlOptions[CURLOPT_POSTFIELDS] = ($body instanceof FormData)
+                ? $body->data
+                : (string) $body;
         }
 
         $curlOptions[CURLOPT_RETURNTRANSFER] = true;
