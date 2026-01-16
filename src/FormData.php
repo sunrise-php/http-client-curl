@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Sunrise\Http\Client\Curl;
 
 use Psr\Http\Message\StreamInterface;
-use Sunrise\Http\Message\Exception\RuntimeException;
+use RuntimeException;
 
 /**
  * @since 2.2.0
